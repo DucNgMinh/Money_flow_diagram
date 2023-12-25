@@ -121,8 +121,8 @@ if __name__ == '__main__':
     # Title
     st.title("Money Flow Diagram !!!!!")
 
-    map_df = pd.read_csv('./Sankey_Plot/map.csv')
-    trans_df = pd.read_csv('./Sankey_Plot/sample data lv pk.csv')[['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Size']]
+    map_df = pd.read_csv(r'map.csv')
+    trans_df = pd.read_csv(r'sample data lv pk.csv')[['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Size']]
 
     map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
 
