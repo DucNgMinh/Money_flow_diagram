@@ -40,7 +40,7 @@ if chosen_id == '1':
         highlighted_node_l5 = layer4_column.multiselect('Filter layer 5', [node + '_Lv5' for node in node_list])
 
     map_df = pd.read_csv('map.csv')
-    trans_df = pd.read_csv(r'C:\Users\Admin\PycharmProjects\BIDV_Task\Sankey_Plot\sample data lv pk.csv')[['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Size']]
+    trans_df = pd.read_csv('sample data lv pk.csv')[['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Size']]
 
     map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
 
@@ -200,7 +200,7 @@ if chosen_id == '2':
     highlighted_node_l2 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in node_list])
     highlighted_node_l3 = layer2_column.multiselect('Filter layer Phân khúc', [node + '_Lv3' for node in node_list])
 
-    df = pd.read_csv(r'C:\Users\Admin\PycharmProjects\Money_flow_diagram\Hai ha\KQ phan bo GD2_T092023.csv')
+    df = pd.read_csv(r'./Hai ha/KQ phan bo GD2_T092023.csv')
     map_df = pd.read_csv(r'map.csv')
     map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
     df['Mã đơn vị tổ chức cấp 6_map'] = df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
@@ -311,7 +311,7 @@ if chosen_id == '3':
     highlighted_node_l2 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in node_list])
     highlighted_node_l3 = layer2_column.multiselect('Filter layer Sản phẩm', [node + '_Lv3' for node in node_list])
 
-    df = pd.read_csv(r'C:\Users\Admin\PycharmProjects\Money_flow_diagram\Hai ha\KQ phan bo GD2_T092023.csv')
+    df = pd.read_csv(r'./Hai ha/KQ phan bo GD2_T092023.csv')
     map_df = pd.read_csv(r'map.csv')
     map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
     df['Mã đơn vị tổ chức cấp 6_map'] = df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
@@ -422,7 +422,7 @@ if chosen_id == '4':
     highlighted_node_l1 = layer0_column.multiselect('Filter layer Phân khúc', [node + '_Lv1' for node in node_list])
     highlighted_node_l2 = layer1_column.multiselect('Filter layer Sản phẩm', [node + '_Lv4' for node in node_list])
     
-    df = pd.read_csv(r'C:\Users\Admin\PycharmProjects\Money_flow_diagram\Hai ha\KQ phan bo GD2_T092023.csv')
+    df = pd.read_csv(r'./Hai ha/KQ phan bo GD2_T092023.csv')
     map_df = pd.read_csv(r'map.csv')
     map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
     df['Mã đơn vị tổ chức cấp 6_map'] = df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
