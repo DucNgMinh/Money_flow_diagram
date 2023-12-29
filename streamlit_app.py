@@ -169,7 +169,7 @@ if chosen_id == '1':
 ## **Giai đoạn 1: Phân bổ chi phí từ Trung tâm đến Trung tâm tại Trụ sở chính**
 
 ### a) Phân bổ chi phí của Trung tâm dịch vụ nội bộ:
-                Quá trình phân bổ này dựa trên tiêu thức phân bổ hoặc tỷ lệ % ước tính đối với thời gian bỏ ra để cung cấp các dịch vụ đến mỗi trung tâm nhận phân bổ. Các đơn vị thuộc Trung tâm dịch vụ nội bộ sẽ được phân bổ một cách tuần tự (mô hình “thác nước” hoặc “phân bổ lần lượt từ trên xuống”) dựa trên phân loại các trung tâm. Trong đó:
+Quá trình phân bổ này dựa trên tiêu thức phân bổ hoặc tỷ lệ % ước tính đối với thời gian bỏ ra để cung cấp các dịch vụ đến mỗi trung tâm nhận phân bổ. Các đơn vị thuộc Trung tâm dịch vụ nội bộ sẽ được phân bổ một cách tuần tự (mô hình “thác nước” hoặc “phân bổ lần lượt từ trên xuống”) dựa trên phân loại các trung tâm. Trong đó:
 
 - Trình tự phân bổ được xác định dựa trên tính trọng yếu, quy mô, mức độ ảnh hưởng của mỗi trung tâm phân bổ.
 - Trung tâm dịch vụ nội bộ đã đi phân bổ trước sẽ không nhận chi phí phân bổ của Trung tâm khác. Trung tâm dịch vụ nội bộ với thứ tự cuối cùng không được phân bổ chi phí cho các trung tâm dịch vụ nội bộ khác mà phân bổ chi phí cho các trung tâm doanh thu, hỗ trợ sản phẩm, quản lý chung toàn hàng và quản lý chung của khối kinh doanh.
@@ -185,7 +185,11 @@ Kết thúc Giai đoạn 1, chi phí quản lý từ tất cả các trung tâm 
 
 ### c) Thứ tự phân bổ của các trung tâm theo Phụ lục V.1/MPA. công văn 8828/Qyd-BIDV ngày 04/12/2017    
 ''')
-    # st.markdown()
+    
+    st.markdown('# Tài liệu tham khảo')
+    url = "https://cafef.vn/khong-chi-vang-sjc-gia-vang-nhan-tron-tron-cung-lap-dinh-moi-64-trieu-dong-luong-188231227091538499.chn"
+    st.markdown("[Quy định 8828/Qyd-BIDV ngày 04/12/2017](%s)" % url)
+    st.markdown("[Quy định 1086/Qd-BIDV ngày 27/03/2019](%s)" % url)
 
 if chosen_id == '2':
     on = st.toggle('Hiển thị Level 4')
@@ -202,8 +206,8 @@ if chosen_id == '2':
     map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
     df['Mã đơn vị tổ chức cấp 6_map'] = df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
     df['Mã SP cấp 5 PK'] = df['Mã SP cấp 5'].astype(str).str[:2]
-    data = df.groupby(['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK', 'Tên phân khúc KH cấp 3'])['Chi phí nhận phân bổ tại thời điểm'].sum().reset_index()
-    data['Mã SP cấp 5 PK'] = 'SP' + data['Mã SP cấp 5 PK'].apply(str) 
+    data = df.groupby(['Mã đơn vị tổ chức cấp 6_map',  'Tên phân khúc KH cấp 3'])['Chi phí nhận phân bổ tại thời điểm'].sum().reset_index()
+    # data['Mã SP cấp 5 PK'] = 'SP' + data['Mã SP cấp 5 PK'].apply(str) 
     def create_node_dict(data, columns):
         unique_nodes = set()
         for col in columns:
@@ -211,7 +215,7 @@ if chosen_id == '2':
         return {node: i for i, node in enumerate(sorted(unique_nodes))}
 
     # Extracting the node names and creating a dictionary to map nodes to unique IDs
-    columns = ['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK',
+    columns = ['Mã đơn vị tổ chức cấp 6_map', 
         'Tên phân khúc KH cấp 3']
     node_dict = create_node_dict(data, columns)
 
@@ -295,7 +299,9 @@ Kết thúc Giai đoạn 1, chi phí quản lý từ tất cả các trung tâm 
 ''')
 
     url = "https://cafef.vn/khong-chi-vang-sjc-gia-vang-nhan-tron-tron-cung-lap-dinh-moi-64-trieu-dong-luong-188231227091538499.chn"
-    st.markdown("check out this %s" % url)
+    st.markdown("check out this [Quy định 8828/Qyd-BIDV ngày 04/12/2017](%s)" % url)
+    st.markdown("check out this [Quy định 1086/Qd-BIDV ngày 27/03/2019](%s)" % url)
+
 if chosen_id == '3':    
     on = st.toggle('Hiển thị Level 4')
     if on:
@@ -306,6 +312,59 @@ if chosen_id == '3':
     highlighted_node_l2 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in node_list])
     highlighted_node_l3 = layer2_column.multiselect('Filter layer Sản phẩm', [node + '_Lv3' for node in node_list])
 
+    df = pd.read_csv(r'C:\Users\Admin\PycharmProjects\Money_flow_diagram\Hai ha\KQ phan bo GD2_T092023.csv')
+    map_df = pd.read_csv(r'map.csv')
+    map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
+    df['Mã đơn vị tổ chức cấp 6_map'] = df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
+    df['Mã SP cấp 5 PK'] = df['Mã SP cấp 5'].astype(str).str[:2]
+    data = df.groupby([ 'Mã SP cấp 5 PK', 'Tên phân khúc KH cấp 3'])['Chi phí nhận phân bổ tại thời điểm'].sum().reset_index()
+    data['Mã SP cấp 5 PK'] = 'SP' + data['Mã SP cấp 5 PK'].apply(str) 
+    def create_node_dict(data, columns):
+        unique_nodes = set()
+        for col in columns:
+            unique_nodes.update(data[col].unique())
+        return {node: i for i, node in enumerate(sorted(unique_nodes))}
+
+    # Extracting the node names and creating a dictionary to map nodes to unique IDs
+    columns = [ 'Mã SP cấp 5 PK',
+        'Tên phân khúc KH cấp 3']
+    node_dict = create_node_dict(data, columns)
+
+    # Preparing source, target, and value lists for the Sankey diagram
+    source = []
+    target = []
+    value = []
+
+    for _, row in data.iterrows():
+        for i in range(len(columns)-1):
+            source.append(node_dict[row[columns[i]]])
+            target.append(node_dict[row[columns[i+1]]])
+            value.append(row['Chi phí nhận phân bổ tại thời điểm'])
+
+    # Creating the node label list
+    node_labels = list(node_dict.keys())
+
+    # Creating the Sankey diagram
+    fig = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=node_labels
+        ),
+        link=dict(
+            source=source,
+            target=target,
+            value=value
+        ))])
+
+    fig.update_layout(title_text="<b>Phân bổ giai đoạn 3: Từ CPQLKD trực tiếp đến Sản phẩm</b>",  # Bold title text
+                        title_font_size=24)
+    fig.update_layout( autosize=False, width=1500, height=1000, 
+                        xaxis_visible=False, xaxis_showticklabels=False,
+                        yaxis_visible=False, yaxis_showticklabels=False)
+
+    st.plotly_chart(fig)
 
 if chosen_id == '4':
     layer0_column, layer1_column = st.columns(2)
@@ -313,4 +372,57 @@ if chosen_id == '4':
     highlighted_node_l1 = layer0_column.multiselect('Filter layer Phân khúc', [node + '_Lv1' for node in node_list])
     highlighted_node_l2 = layer1_column.multiselect('Filter layer Sản phẩm', [node + '_Lv4' for node in node_list])
     
+    df = pd.read_csv(r'C:\Users\Admin\PycharmProjects\Money_flow_diagram\Hai ha\KQ phan bo GD2_T092023.csv')
+    map_df = pd.read_csv(r'map.csv')
+    map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
+    df['Mã đơn vị tổ chức cấp 6_map'] = df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
+    df['Mã SP cấp 5 PK'] = df['Mã SP cấp 5'].astype(str).str[:2]
+    data = df.groupby(['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK', 'Tên phân khúc KH cấp 3'])['Chi phí nhận phân bổ tại thời điểm'].sum().reset_index()
+    data['Mã SP cấp 5 PK'] = 'SP' + data['Mã SP cấp 5 PK'].apply(str) 
+    def create_node_dict(data, columns):
+        unique_nodes = set()
+        for col in columns:
+            unique_nodes.update(data[col].unique())
+        return {node: i for i, node in enumerate(sorted(unique_nodes))}
+
+    # Extracting the node names and creating a dictionary to map nodes to unique IDs
+    columns = ['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK',
+        'Tên phân khúc KH cấp 3']
+    node_dict = create_node_dict(data, columns)
+
+    # Preparing source, target, and value lists for the Sankey diagram
+    source = []
+    target = []
+    value = []
+
+    for _, row in data.iterrows():
+        for i in range(len(columns)-1):
+            source.append(node_dict[row[columns[i]]])
+            target.append(node_dict[row[columns[i+1]]])
+            value.append(row['Chi phí nhận phân bổ tại thời điểm'])
+
+    # Creating the node label list
+    node_labels = list(node_dict.keys())
+
+    # Creating the Sankey diagram
+    fig = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=node_labels
+        ),
+        link=dict(
+            source=source,
+            target=target,
+            value=value
+        ))])
+
+    fig.update_layout(title_text="<b>Phân bổ giai đoạn 4: Từ Đơn vị nhận phân bổ đến Sản phẩm, Phân khúc Khách</b>",  # Bold title text
+                        title_font_size=24)
+    fig.update_layout( autosize=False, width=1500, height=1000, 
+                        xaxis_visible=False, xaxis_showticklabels=False,
+                        yaxis_visible=False, yaxis_showticklabels=False)
+
+    st.plotly_chart(fig)
 
