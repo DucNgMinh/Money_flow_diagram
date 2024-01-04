@@ -1,0 +1,49 @@
+# Nguyên tắc chung
+
+## **Nguyên tắc phân loại trung tâm phân bổ:**
+
+1. **Một đơn vị tổ chức có thể tương ứng với một trung tâm phân bổ.**
+2. **Nhiều đơn vị tổ chức được gắn vào một trung tâm phân bổ.** Các đơn vị tổ chức này có nhiệm vụ tương tự cùng thuộc Trụ sở chính hoặc cùng Chi nhánh và chi phí của các đơn vị này có thể được phân bổ theo cùng một tiêu thức.
+3. **Các đơn vị tổ chức đảm nhận nhiều chức năng, nhiệm vụ khác nhau có thể được phân chia thành nhiều trung tâm phân bổ.**
+
+## **Các loại trung tâm phân bổ:**
+
+**a) Trung tâm doanh thu là bất kỳ bộ phận nào của BIDV có chức năng kinh doanh trực tiếp tạo ra doanh thu cho BIDV.**
+
+**b) Trung tâm chi phí là các bộ phận còn lại không phải là Trung tâm doanh thu**. Tùy theo chức năng, nhiệm vụ, Trung tâm chi phí có thể được phân loại thành:
+
+- **Trung tâm hỗ trợ sản phẩm là đơn vị tại Trụ sở chính có cung cấp sản phẩm và dịch vụ tới khách hàng nhưng không chịu trách nhiệm tạo ra doanh thu (thường là đơn vị tác nghiệp tập trung như TTTT, TTTN&TTTM,..).
+- Trung tâm dịch vụ nội bộ là đơn vị tại Trụ sở chính cung cấp những dịch vụ có thể xác định được tới các trung tâm khác nhưng không trực tiếp cung cấp sản phẩm và dịch vụ tới khách hàng.
+- Trung tâm quản lý chung là các bộ phận mà không thể phân bổ chi phí của bộ phận đó cho các trung tâm khác dựa trên đơn vị dịch vụ cung cấp, gồm có: Trung tâm quản lý chung toàn hàng và Trung tâm quản lý chung khối kinh doanh.
+
++ Trung tâm quản lý chung Chi nhánh là các đơn vị mà Chi nhánh không thể phân bổ chi phí của đơn vị đó cho các trung tâm khác dựa trên đơn vị dịch vụ cung cấp.
+
+- Trung tâm hỗ trợ trực tiếp là đơn vị ở Chi nhánh có tham gia cung cấp sản phẩm và dịch vụ đến khách hàng nhưng không chịu trách nhiệm tạo ra doanh thu (thường là đơn vị tác nghiệp tại Chi nhánh như Phòng giao dịch khách hàng, phòng Quản trị tín dụng,..).
+
+### Phân loại trung tâm hiện tại được quy định tại văn bản 1086/Qd-BIDV ngày 27/03/2019
+
+# Các giai đoạn phân bổ
+
+## **Giai đoạn 1: Phân bổ chi phí từ Trung tâm đến Trung tâm tại Trụ sở chính**
+
+### a) Phân bổ chi phí của Trung tâm dịch vụ nội bộ:
+Quá trình phân bổ này dựa trên tiêu thức phân bổ hoặc tỷ lệ % ước tính đối với thời gian bỏ ra để cung cấp các dịch vụ đến mỗi trung tâm nhận phân bổ. Các đơn vị thuộc Trung tâm dịch vụ nội bộ sẽ được phân bổ một cách tuần tự (mô hình “thác nước” hoặc “phân bổ lần lượt từ trên xuống”) dựa trên phân loại các trung tâm. Trong đó:
+
+- Trình tự phân bổ được xác định dựa trên tính trọng yếu, quy mô, mức độ ảnh hưởng của mỗi trung tâm phân bổ.
+- Trung tâm dịch vụ nội bộ đã đi phân bổ trước sẽ không nhận chi phí phân bổ của Trung tâm khác. Trung tâm dịch vụ nội bộ với thứ tự cuối cùng không được phân bổ chi phí cho các trung tâm dịch vụ nội bộ khác mà phân bổ chi phí cho các trung tâm doanh thu, hỗ trợ sản phẩm, quản lý chung toàn hàng và quản lý chung của khối kinh doanh.
+- Khi chi phí của một trung tâm đi phân bổ cho các trung tâm khác, tổng chi phí của trung tâm được phân bổ vẫn giữ nguyên thông tin về các loại chi phí phân bổ vào đơn vị này.
+
+Cách thức này đòi hỏi thiết lập mối quan hệ giữa chi phí và dịch vụ cho mỗi phòng ban để xác định trình tự phân bổ, từ đó nâng cao tính minh bạch về chi phí của các khối kinh doanh.
+
+### b) Phân bổ chi phí của Trung tâm quản lý chung toàn hàng đến các đơn vị và khối kinh doanh theo các tiêu thức phân bổ tổng hợp.
+
+Các trung tâm quản lý chung toàn hàng phân bổ chi phí trực tiếp cho các khối kinh doanh sẽ xuất hiện vào bước cuối cùng trong quy trình phân bổ chi phí tuần tự trong Giai đoạn 1.
+
+Kết thúc Giai đoạn 1, chi phí quản lý từ tất cả các trung tâm dịch vụ nội bộ và trung tâm quản lý chung toàn hàng sẽ được phân bổ đi hết 100%.
+
+### c) Thứ tự phân bổ của các trung tâm theo Phụ lục V.1/MPA. công văn 8828/Qyd-BIDV ngày 04/12/2017
+
+# Tài liệu tham khảo
+[Quy định 8828/Qyd-BIDV ngày 04/12/2017](https://cafef.vn/khong-chi-vang-sjc-gia-vang-nhan-tron-tron-cung-lap-dinh-moi-64-trieu-dong-luong-188231227091538499.chn)
+
+[Quy định 1086/Qd-BIDV ngày 27/03/2019](https://cafef.vn/khong-chi-vang-sjc-gia-vang-nhan-tron-tron-cung-lap-dinh-moi-64-trieu-dong-luong-188231227091538499.chn)

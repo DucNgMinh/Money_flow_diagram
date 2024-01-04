@@ -176,7 +176,7 @@ if __name__ == '__main__':
     if option == 'Level 0 and 4':
         map_columns = ['Lv0', 'Lv4']
         highlighted_nodes = st.multiselect("Select Highlight Node:", node_list)
-        print(highlighted_nodes[0])
+        print(highlighted_nodes)
     elif option == 'Level 0 to 4':
         map_columns = ['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4']
         selected_layer = st.selectbox('Select focus layer', ('Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4'))
