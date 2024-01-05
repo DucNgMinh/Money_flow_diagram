@@ -28,6 +28,7 @@ def load_data():
     # load allocation data
     al_df = pd.read_csv(r'./Hai ha/KQ phan bo GD2_T092023.csv')
     al_df.rename(columns = {'Chi phí nhận phân bổ tại thời điểm':'Size'}, inplace = True)
+    al_df.dropna(inplace= True)
 
     # create mapped columns for al_df
     al_df['Mã đơn vị tổ chức cấp 6_map'] = al_df['Mã đơn vị tổ chức cấp 6'].map(map_name) 
@@ -55,20 +56,8 @@ def load_option():
             'rgba(188, 189, 34, 0.8)', 'rgba(31, 119, 180, 0.8)', 'rgba(140, 86, 75, 0.8)']
     
     color_map = dict(zip(node_list, color_list))
-        
-    pk_list = ['KHACH HANG DAU TU', 'KHACH HANG CA NHAN VIP',
-                'KHACH HANG DOANH NGHIEP LON',
-                'KHACH HANG DOANH NGHIEP VUA VA NHO (SMEs)',
-                'KHACH HANG DOANH NGHIEP QUY MO SIEU NHO (ME)',
-                'KHACH HANG DOANH NGHIEP CO VON DAU TU NUOC NGOAI (FIE)',
-                'KHACH HANG CA NHAN THONG THUONG', 'KHACH HANG CA NHAN THAN THIET',
-                'KHACH HANG DINH CHE TAI CHINH', 'KHACH HANG AO KHOI BAN BUON',
-                'UNALLOCABLE', 'KHACH HANG KINH DOANH VON VA TIEN TE',
-                'KHACH HANG NGUON VON UY THAC QUOC TE', 'KHACH HANG KHAC',
-                'BO PHAN CHUNG', 'SO NGAN HANG']
     
-    return node_list, color_list, color_map, pk_list
-
+    return node_list, color_list, color_map
 @st.cache_data
 def load_content():
     page_1 = open("./Tailieu/Page1.txt", "r", encoding="utf8").read()
@@ -135,29 +124,30 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title):
         )
     )])
 
-    fig.update_layout(title_text= title,  
-                    title_font_size=24)
+    fig.update_layout(title_text= title, title_font_size=24)
     fig.update_layout(autosize=False, width=1620, height=1080,
                       xaxis_visible=False, xaxis_showticklabels=False,
                         yaxis_visible=False, yaxis_showticklabels=False)
     return fig
 
-def calculate_distribution(data, highlighted_nodes):
+def calculate_distribution(data, highlighted_nodes, page_flag= 1):
     if len(highlighted_nodes) == 0:
         return None
 
     def calculate_percentage(df, level_column, size_column):
         grouped_df = df[[level_column, size_column]].groupby(level_column)[size_column].sum().reset_index()
         total_size = grouped_df[size_column].sum()
-        grouped_df[f'Percentage_{level_column[2]}'] = grouped_df[size_column] / total_size 
+        grouped_df[f'Percentage_{level_column}'] = grouped_df[size_column] / total_size 
         return grouped_df.drop(size_column, axis=1)
     
     values_to_filter = highlighted_nodes
     filtered_df = data[data.isin(values_to_filter).any(axis=1)]
     filtered_columns = filtered_df.columns
     filtered_columns = filtered_columns.drop('Size')
-    for col in filtered_columns:
-        filtered_df[col] = filtered_df[col].str[:-4]
+    
+    if page_flag == 1:
+        for col in filtered_columns:
+            filtered_df[col] = filtered_df[col].str[:-4]
 
     results = []
     for col in filtered_columns:
@@ -165,13 +155,7 @@ def calculate_distribution(data, highlighted_nodes):
         results.append(result)
 
     final_result = pd.concat(results, axis=1)
-    final_result = final_result.style.format({
-        'Percentage_0': '{:.2%}'.format,
-        'Percentage_1': '{:.2%}'.format,
-        'Percentage_2': '{:.2%}'.format,
-        'Percentage_3': '{:.2%}'.format,
-        'Percentage_4': '{:.2%}'.format
-    })
+    pd.options.display.float_format = '{:.2%}'.format
     return final_result
 
 def main():
@@ -185,7 +169,7 @@ def main():
         stx.TabBarItemData(id=4, title="Phân bổ giai đoạn 4:", description="Từ Đơn vị nhận phân bổ đến Sản phẩm, Phân khúc Khách"),
     ], default=1)
 
-    node_list, color_list, color_map, pk_list = load_option()
+    node_list, color_list, color_map = load_option()
     # load data into cache
     all_lv_df, lv_04_df, pk_df, sp_df, sp_pk_df = load_data()
 
@@ -228,68 +212,49 @@ def main():
         st.markdown(page_1)
         
     elif chosen_id == '2':
-        on = st.toggle('Hiển thị Level 4')
-        if on:
-            st.write('Hiển thị Level 4')
-            layer0_column, layer1_column, layer2_column = st.columns(3)
-
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv1' for node in node_list])
-            highlighted_node_l4 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in node_list])
-            highlighted_node_pk = layer2_column.multiselect('Filter layer Phân khúc', [node for node in pk_list])
-            highlighted_nodes = highlighted_node_l1 + highlighted_node_l4 + highlighted_node_pk
-        else:
-            st.write('Không hiển thị Level 4')
-
-            layer0_column, layer1_column = st.columns(2)
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv1' for node in node_list])
-            highlighted_node_pk = layer1_column.multiselect('Filter layer Phân khúc', [node for node in pk_list])
-            highlighted_nodes = highlighted_node_l1 + highlighted_node_pk
+        layer0_column, layer1_column = st.columns(2)
+        highlighted_node_l1 = layer0_column.multiselect('Filter Đơn vị tổ chức', [node for node in pk_df['Mã đơn vị tổ chức cấp 6_map'].unique()])
+        highlighted_node_pk = layer1_column.multiselect('Filter Phân khúc', [node for node in pk_df['Tên phân khúc KH cấp 3'].unique()])
+        highlighted_nodes = highlighted_node_l1 + highlighted_node_pk
 
         selected_columns = ['Mã đơn vị tổ chức cấp 6_map',  'Tên phân khúc KH cấp 3']
         fig = sankey_graph(pk_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 2: Từ CPQLKD trực tiếp đến PKKH</b>")
         st.plotly_chart(fig)
-        dist_result = calculate_distribution(all_lv_df, highlighted_nodes)
+        dist_result = calculate_distribution(pk_df, highlighted_nodes, page_flag = 2)
         st.dataframe(dist_result)  
 
         st.markdown(page_2)
 
     elif chosen_id == '3':
-        on = st.toggle('Hiển thị Level 4')
-        if on:
-            st.write('Hiển thị Level 4')
-            layer0_column, layer1_column, layer2_column = st.columns(3)
+        layer0_column, layer1_column = st.columns(2)
+        highlighted_node_l1 = layer0_column.multiselect('Filter Đơn vị tổ chức', [node for node in sp_df['Mã đơn vị tổ chức cấp 6_map'].unique()])
+        highlighted_node_sp = layer1_column.multiselect('Filter Sản phẩm', [node for node in sp_df['Mã SP cấp 5 PK'].unique()])
+        highlighted_nodes = highlighted_node_l1 + highlighted_node_sp
 
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv1' for node in node_list])
-            highlighted_node_l4 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in node_list])
-            highlighted_node_sp = layer2_column.multiselect('Filter layer Sản phẩm', [node + '_Lv3' for node in node_list])
-            highlighted_nodes = highlighted_node_l1 + highlighted_node_l4 + highlighted_node_sp
-        else:
-            st.write('Không hiển thị Level 4')
-
-            layer0_column, layer1_column = st.columns(2)
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv1' for node in node_list])
-            highlighted_node_sp = layer1_column.multiselect('Filter layer Sản phẩm', [node + '_Lv3' for node in node_list])
-            highlighted_nodes = highlighted_node_l1 + highlighted_node_sp
-
+        print(highlighted_nodes)
         selected_columns = ['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK']
-        fig = sankey_graph(sp_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 2: Từ CPQLKD trực tiếp đến PKKH</b>")
+        fig = sankey_graph(sp_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 3: Từ CPQLKD trực tiếp đến Sản phẩm</b>")
         st.plotly_chart(fig)
-        dist_result = calculate_distribution(sp_df, highlighted_nodes)
+        dist_result = calculate_distribution(sp_df, highlighted_nodes, page_flag = 3)
+        print()
         st.dataframe(dist_result) 
 
         st.markdown(page_3)
 
     else:
-        layer0_column, layer1_column = st.columns(2)
+        layer0_column, layer1_column, layer2_column = st.columns(3)
 
-        highlighted_node_pk = layer0_column.multiselect('Filter layer Phân khúc', [node for node in pk_list])
-        highlighted_node_sp = layer1_column.multiselect('Filter layer Sản phẩm', [node + '_Lv4' for node in node_list])
+        highlighted_node_pk = layer0_column.multiselect('Filter Đơn vị tổ chức', [node for node in sp_pk_df['Mã đơn vị tổ chức cấp 6_map'].unique()])
+        highlighted_node_sp = layer1_column.multiselect('Filter Sản phẩm', [node for node in sp_pk_df['Mã SP cấp 5 PK'].unique()])
+        highlighted_node_pk = layer2_column.multiselect('Filter Phân khúc', [node for node in sp_pk_df['Tên phân khúc KH cấp 3'].unique()])
+        
+
         highlighted_nodes = highlighted_node_pk + highlighted_node_sp
 
         selected_columns = ['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK', 'Tên phân khúc KH cấp 3']
-        fig = sankey_graph(sp_pk_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 2: Từ CPQLKD trực tiếp đến PKKH</b>")
+        fig = sankey_graph(sp_pk_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 4: Từ Đơn vị nhận phân bổ đến Sản phẩm, Phân khúc Khách</b>")
         st.plotly_chart(fig)
-        dist_result = calculate_distribution(sp_pk_df, highlighted_nodes)
+        dist_result = calculate_distribution(sp_pk_df, highlighted_nodes, page_flag = 4)
         st.dataframe(dist_result) 
 
         st.markdown(page_4)
