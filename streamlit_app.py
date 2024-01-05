@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+pd.options.display.float_format = '{:.2%}'.format
 import plotly.graph_objects as go   
 
 import streamlit as st
@@ -137,7 +137,7 @@ def calculate_distribution(data, highlighted_nodes, page_flag= 1):
     def calculate_percentage(df, level_column, size_column):
         grouped_df = df[[level_column, size_column]].groupby(level_column)[size_column].sum().reset_index()
         total_size = grouped_df[size_column].sum()
-        grouped_df[f'Percentage_{level_column}'] = grouped_df[size_column] / total_size 
+        grouped_df[f'Percentage_{level_column}'] = grouped_df[size_column] / total_size * 100
         return grouped_df.drop(size_column, axis=1)
     
     values_to_filter = highlighted_nodes
@@ -155,8 +155,20 @@ def calculate_distribution(data, highlighted_nodes, page_flag= 1):
         results.append(result)
 
     final_result = pd.concat(results, axis=1)
-    pd.options.display.float_format = '{:.2%}'.format
     return final_result
+
+def generate_format(column_name):
+    modified_list = [item.replace('_mapped', '') for item in column_name]
+    modified_list = [item.replace('_map', '') for item in modified_list]
+    # modified_list = [item.replace('Percentage_', 'Percentage_') for item in modified_list]
+    format_dict = {}
+
+    for orig, mod in zip(column_name, modified_list):
+        if orig.startswith('Percentage_'):
+            format_dict[orig] = st.column_config.NumberColumn(mod, format="%.2f %%")
+        else:
+            format_dict[orig] = mod
+    return format_dict
 
 def main():
     st.set_page_config(layout="wide")
@@ -189,8 +201,11 @@ def main():
 
             fig = sankey_graph(lv_04_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>")
             st.plotly_chart(fig)
-            dist_result = calculate_distribution(lv_04_df, highlighted_nodes)
-            st.dataframe(dist_result)
+            
+            if len(highlighted_nodes) != 0:
+                dist_result = calculate_distribution(lv_04_df, highlighted_nodes)
+                format_dict = generate_format(dist_result.columns)
+                st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)
 
         else:
             selected_columns = ['Lv0_mapped', 'Lv1_mapped', 'Lv2_mapped', 'Lv3_mapped', 'Lv4_mapped']
@@ -206,8 +221,11 @@ def main():
 
             fig = sankey_graph(all_lv_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>")
             st.plotly_chart(fig)
-            dist_result = calculate_distribution(all_lv_df, highlighted_nodes)
-            st.dataframe(dist_result)        
+            
+            if len(highlighted_nodes) != 0:
+                dist_result = calculate_distribution(all_lv_df, highlighted_nodes)
+                format_dict = generate_format(dist_result.columns)
+                st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)   
 
         st.markdown(page_1)
         
@@ -220,8 +238,10 @@ def main():
         selected_columns = ['Mã đơn vị tổ chức cấp 6_map',  'Tên phân khúc KH cấp 3']
         fig = sankey_graph(pk_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 2: Từ CPQLKD trực tiếp đến PKKH</b>")
         st.plotly_chart(fig)
-        dist_result = calculate_distribution(pk_df, highlighted_nodes, page_flag = 2)
-        st.dataframe(dist_result)  
+        if len(highlighted_nodes) != 0:
+            dist_result = calculate_distribution(pk_df, highlighted_nodes, page_flag = 2)
+            format_dict = generate_format(dist_result.columns)
+            st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)  
 
         st.markdown(page_2)
 
@@ -235,9 +255,10 @@ def main():
         selected_columns = ['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK']
         fig = sankey_graph(sp_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 3: Từ CPQLKD trực tiếp đến Sản phẩm</b>")
         st.plotly_chart(fig)
-        dist_result = calculate_distribution(sp_df, highlighted_nodes, page_flag = 3)
-        print()
-        st.dataframe(dist_result) 
+        if len(highlighted_nodes) != 0:
+            dist_result = calculate_distribution(sp_df, highlighted_nodes, page_flag = 3)
+            format_dict = generate_format(dist_result.columns)
+            st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)  
 
         st.markdown(page_3)
 
@@ -254,8 +275,10 @@ def main():
         selected_columns = ['Mã đơn vị tổ chức cấp 6_map', 'Mã SP cấp 5 PK', 'Tên phân khúc KH cấp 3']
         fig = sankey_graph(sp_pk_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 4: Từ Đơn vị nhận phân bổ đến Sản phẩm, Phân khúc Khách</b>")
         st.plotly_chart(fig)
-        dist_result = calculate_distribution(sp_pk_df, highlighted_nodes, page_flag = 4)
-        st.dataframe(dist_result) 
+        if len(highlighted_nodes) != 0:
+            dist_result = calculate_distribution(sp_pk_df, highlighted_nodes, page_flag = 4)
+            format_dict = generate_format(dist_result.columns)
+            st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict) 
 
         st.markdown(page_4)
         
