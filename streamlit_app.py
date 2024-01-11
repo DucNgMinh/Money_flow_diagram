@@ -205,7 +205,7 @@ def main():
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l4
 
             fig = sankey_graph(lv_04_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>")
-            st.plotly_chart(fig)
+            st.plotly_chart(fig, autosize= True)
             
             if len(highlighted_nodes) != 0:
                 dist_result = calculate_distribution(lv_04_df, highlighted_nodes)
