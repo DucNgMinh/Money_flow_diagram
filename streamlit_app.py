@@ -68,7 +68,7 @@ def load_content():
 
     return page_1, page_2, page_3, page_4
 
-def sankey_graph(data, mapped_columns, highlighted_nodes, title):
+def sankey_graph(data, mapped_columns, highlighted_nodes, title, autosize= False):
     data[mapped_columns] = data[mapped_columns].astype(str)
 
     # Function to create a mapping of each unique step to a unique integer
@@ -87,7 +87,7 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title):
     values = []
     colors = []  # For link colors
 
-    highlight_color = 'rgba(255, 0, 0, 0.5)'  
+    highlight_color = 'rgba(0, 107, 105, 0.2)'  
     default_color = 'rgba(0, 0, 0, 0.1)'  
 
     # Function to check if a row includes the highlighted node
@@ -124,11 +124,14 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title):
             color=colors  
         )
     )])
-
+    
+    if autosize == False:
+        fig.update_layout(autosize=autosize, width=1620, height=1080)
+    
     fig.update_layout(title_text= title, title_font_size=24)
-    fig.update_layout(autosize=False, width=1620, height=1080,
-                      xaxis_visible=False, xaxis_showticklabels=False,
+    fig.update_layout(xaxis_visible=False, xaxis_showticklabels=False,
                         yaxis_visible=False, yaxis_showticklabels=False)
+    
     return fig
 
 def calculate_distribution(data, highlighted_nodes, page_flag= 1):
@@ -139,6 +142,7 @@ def calculate_distribution(data, highlighted_nodes, page_flag= 1):
         grouped_df = df[[level_column, size_column]].groupby(level_column)[size_column].sum().reset_index()
         total_size = grouped_df[size_column].sum()
         grouped_df[f'Percentage_{level_column}'] = grouped_df[size_column] / total_size * 100
+        grouped_df = grouped_df.sort_values(by= f'Percentage_{level_column}')
         return grouped_df.drop(size_column, axis=1)
     
     values_to_filter = highlighted_nodes
@@ -208,6 +212,11 @@ def main():
                 format_dict = generate_format(dist_result.columns)
                 st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)
 
+                highlighted_df = lv_04_df[lv_04_df.isin(highlighted_nodes).any(axis=1)]
+                # st.dataframe(highlighted_df)
+                sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, title= "Highlighted", autosize= True)
+                st.plotly_chart(sub_fig)
+            
         else:
             selected_columns = ['Lv0_mapped', 'Lv1_mapped', 'Lv2_mapped', 'Lv3_mapped', 'Lv4_mapped']
             layer0_column, layer1_column, layer2_column, layer3_column, layer4_column = st.columns(5)
@@ -227,6 +236,12 @@ def main():
                 dist_result = calculate_distribution(all_lv_df, highlighted_nodes)
                 format_dict = generate_format(dist_result.columns)
                 st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)   
+
+                highlighted_df = all_lv_df[all_lv_df.isin(highlighted_nodes).any(axis=1)]
+                # st.dataframe(highlighted_df)
+                sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, title= "Highlighted")
+                st.plotly_chart(sub_fig)
+            
 
         st.markdown(page_1)
         
