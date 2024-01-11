@@ -9,9 +9,10 @@ import extra_streamlit_components as stx
 @st.cache_data
 def load_data():
     # load map data
-    map_df = pd.read_csv(r'map.csv')
-    map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
-
+    # map_df = pd.read_csv(r'map.csv')
+    # map_name = map_df.set_index('ORG_UNIT_ID')['LEVEL_02_NAME'].to_dict()
+    map_df = pd.read_csv(r'map_moi.csv')
+    map_name = map_df.set_index('LEVEL_06_CODE ')['Tên khối'].to_dict()
     # load transaction data
     trans_df = pd.read_csv(r'sample data lv pk.csv')[['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Size']]
     
@@ -58,7 +59,7 @@ def load_option():
     color_map = dict(zip(node_list, color_list))
     
     return node_list, color_list, color_map
-@st.cache_data
+
 def load_content():
     page_1 = open("./Tailieu/Page1.txt", "r", encoding="utf8").read()
     page_2 = open("./Tailieu/Page2.txt", "r", encoding="utf8").read()
@@ -184,18 +185,18 @@ def main():
     node_list, color_list, color_map = load_option()
     # load data into cache
     all_lv_df, lv_04_df, pk_df, sp_df, sp_pk_df = load_data()
-
+    map_df = pd.read_csv(r'map_moi.csv')
     # load content into cache
     page_1, page_2, page_3, page_4 = load_content()
 
     if chosen_id == '1':
-        option = st.selectbox('Option', ('Level 0 and 4', 'Level 0 to 4'))
-        if option == 'Level 0 and 4':
+        option = st.selectbox('Option', ('Level 1 and 5', 'Level 1 to 5'))
+        if option == 'Level 1 and 5':
             selected_columns = ['Lv0_mapped', 'Lv4_mapped']
 
             layer0_column, layer1_column = st.columns(2)
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv0' for node in node_list])
-            highlighted_node_l4 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in node_list])
+            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv0' for node in map_df['Tên khối'].dropna().unique()])
+            highlighted_node_l4 = layer1_column.multiselect('Filter layer 4', [node + '_Lv4' for node in map_df['Tên khối'].dropna().unique()])
             
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l4
 
@@ -211,11 +212,11 @@ def main():
             selected_columns = ['Lv0_mapped', 'Lv1_mapped', 'Lv2_mapped', 'Lv3_mapped', 'Lv4_mapped']
             layer0_column, layer1_column, layer2_column, layer3_column, layer4_column = st.columns(5)
 
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv0' for node in node_list])
-            highlighted_node_l2 = layer1_column.multiselect('Filter layer 2', [node + '_Lv1' for node in node_list])
-            highlighted_node_l3 = layer2_column.multiselect('Filter layer 3', [node + '_Lv2' for node in node_list])
-            highlighted_node_l4 = layer3_column.multiselect('Filter layer 4', [node + '_Lv3' for node in node_list])
-            highlighted_node_l5 = layer4_column.multiselect('Filter layer 5', [node + '_Lv4' for node in node_list])
+            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node + '_Lv0' for node in map_df['Tên khối'].dropna().unique()])
+            highlighted_node_l2 = layer1_column.multiselect('Filter layer 2', [node + '_Lv1' for node in map_df['Tên khối'].dropna().unique()])
+            highlighted_node_l3 = layer2_column.multiselect('Filter layer 3', [node + '_Lv2' for node in map_df['Tên khối'].dropna().unique()])
+            highlighted_node_l4 = layer3_column.multiselect('Filter layer 4', [node + '_Lv3' for node in map_df['Tên khối'].dropna().unique()])
+            highlighted_node_l5 = layer4_column.multiselect('Filter layer 5', [node + '_Lv4' for node in map_df['Tên khối'].dropna().unique()])
             
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l2 + highlighted_node_l3 + highlighted_node_l4 + highlighted_node_l5
 
