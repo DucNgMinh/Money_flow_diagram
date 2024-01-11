@@ -58,6 +58,8 @@ def load_option():
     
     color_map = dict(zip(node_list, color_list))
     
+    df = pd.read_csv('ColorMap.csv')
+    color_map = dict(zip(df['TÊN GỐC'].to_list(), df['Màu'].to_list()))
     return node_list, color_list, color_map
 
 def load_content():
@@ -68,7 +70,7 @@ def load_content():
 
     return page_1, page_2, page_3, page_4
 
-def sankey_graph(data, mapped_columns, highlighted_nodes, title, autosize= False):
+def sankey_graph(data, mapped_columns, highlighted_nodes, title, color_map= False, autosize= False):
     data[mapped_columns] = data[mapped_columns].astype(str)
 
     # Function to create a mapping of each unique step to a unique integer
@@ -78,6 +80,17 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title, autosize= False
             unique_nodes.update(data[col].unique())
         return {node: i for i, node in enumerate(sorted(unique_nodes))}
 
+    # Create
+    def create_color_list(node_mapping, color_map):
+        new_color_list = []
+        for node in node_mapping:
+            base_node = node.split('_')[0]
+            if base_node in color_map:
+                new_color_list.append(color_map[base_node])
+            else:
+                new_color_list.append('#CB99C9')  # Default color for unmatched nodes
+        return new_color_list
+    
     # Create the node mapping
     node_mapping = create_node_mapping(data, mapped_columns)
 
@@ -109,13 +122,33 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title, autosize= False
             values.append(value)
             colors.append(highlight_color if row_highlighted else default_color)
 
-    # Create the Sankey diagram
-    fig = go.Figure(data=[go.Sankey(
+    if color_map == False:
+        fig = go.Figure(data=[go.Sankey(
         node=dict(
             pad=15,
             thickness=20,
             line=dict(color="black", width=0.5),
-            label=list(node_mapping.keys())
+            label=list(node_mapping.keys()),
+            color="rgba(255, 199, 47, 0.5)",
+            
+        ),
+        link=dict(
+            source=sources,
+            target=targets,
+            value=values,
+            color=colors  
+        )
+    )])
+    else:
+        color_list = create_color_list(node_mapping, color_map)
+        fig = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=list(node_mapping.keys()),
+            color=color_list,
+            
         ),
         link=dict(
             source=sources,
@@ -128,6 +161,7 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title, autosize= False
     if autosize == False:
         fig.update_layout(autosize=autosize, width=1620, height=1080)
     
+    fig.update_layout(font_family="Arial", font_color="blue", font_size=14)
     fig.update_layout(title_text= title, title_font_size=24)
     fig.update_layout(xaxis_visible=False, xaxis_showticklabels=False,
                         yaxis_visible=False, yaxis_showticklabels=False)
@@ -204,7 +238,7 @@ def main():
             
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l4
 
-            fig = sankey_graph(lv_04_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>")
+            fig = sankey_graph(lv_04_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>", color_map= color_map)
             st.plotly_chart(fig, autosize= True)
             
             if len(highlighted_nodes) != 0:
@@ -214,7 +248,7 @@ def main():
 
                 highlighted_df = lv_04_df[lv_04_df.isin(highlighted_nodes).any(axis=1)]
                 # st.dataframe(highlighted_df)
-                sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, title= "Highlighted", autosize= True)
+                sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, title= "Highlighted", color_map= color_map)
                 st.plotly_chart(sub_fig)
             
         else:
@@ -229,7 +263,7 @@ def main():
             
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l2 + highlighted_node_l3 + highlighted_node_l4 + highlighted_node_l5
 
-            fig = sankey_graph(all_lv_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>")
+            fig = sankey_graph(all_lv_df, selected_columns, highlighted_nodes, title= "<b>Phân bổ giai đoạn 1: Từ trung tâm đến trung tâm</b>", color_map= color_map)
             st.plotly_chart(fig)
             
             if len(highlighted_nodes) != 0:
@@ -239,7 +273,7 @@ def main():
 
                 highlighted_df = all_lv_df[all_lv_df.isin(highlighted_nodes).any(axis=1)]
                 # st.dataframe(highlighted_df)
-                sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, title= "Highlighted")
+                sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, title= "Highlighted", color_map= color_map)
                 st.plotly_chart(sub_fig)
             
 
