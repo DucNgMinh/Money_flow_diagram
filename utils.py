@@ -41,33 +41,17 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title, size_column= 'S
     # Create the node mapping
     node_mapping = create_node_mapping(data, mapped_columns)
     node_mapping[''] = len(node_mapping)
-    print(node_mapping)
+
     # Prepare source, target, and value lists for the Sankey diagram
     sources = []
     targets = []
     values = []
     colors = []  
 
-    color_list = create_color_list(node_mapping, color_map)
-    highlight_color_dict = {'KHOI BAN LE_Lv0':'#CBF3D2' ,
-                            'KHOI BAN LE_Lv1':'#CBF3D2' ,
-                            'KHOI BAN LE_Lv2':'#CBF3D2' ,
-                            'KHOI BAN LE_Lv3':'#CBF3D2' ,
-                            'KHOI BAN LE_Lv4':'#CBF3D2' ,
-                            'KHOI BAN BUON_Lv0':'#FFCCCB',
-                            'KHOI BAN BUON_Lv1':'#FFCCCB',
-                            'KHOI BAN BUON_Lv2':'#FFCCCB',
-                            'KHOI BAN BUON_Lv3':'#FFCCCB',
-                            'KHOI BAN BUON_Lv4':'#FFCCCB',
-                            'KHOI THAM DINH VA PHE DUYET_Lv0':'#ff7b7b',
-                            'KHOI THAM DINH VA PHE DUYET_Lv1':'#ff7b7b',
-                            'KHOI THAM DINH VA PHE DUYET_Lv2':'#ff7b7b',
-                            'KHOI THAM DINH VA PHE DUYET_Lv3':'#ff7b7b',
-                            'KHOI THAM DINH VA PHE DUYET_Lv4':'#ff7b7b'}  
+    color_list = create_color_list(node_mapping, color_map) 
     highlight_color = '#CBF3D2'
     default_color = 'rgba(0, 0, 0, 0.05)'  
 
-    
     # Function to check if a row includes the highlighted node
     def row_includes_highlighted_node(row, highlighted_nodes):
         return any(target in row[mapped_columns].values for target in highlighted_nodes)
@@ -86,12 +70,6 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title, size_column= 'S
             targets.append(target)
             values.append(value)
             colors.append(color_list[target] if row_highlighted else default_color) #highlight_color
-            if row_highlighted:
-                print(highlight_color)
-                print(row[mapped_columns[i]])
-                print(source)
-                print(color_list[source])
-                print('_' * 10  )
             
     for node in data[mapped_columns[-1]].unique():
         sources.append(node_mapping[node])
