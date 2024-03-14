@@ -69,7 +69,7 @@ def sankey_graph(data, mapped_columns, highlighted_nodes, title, size_column= 'S
             sources.append(source)
             targets.append(target)
             values.append(value)
-            colors.append(color_list[target] if row_highlighted else default_color) #highlight_color
+            colors.append(color_list[source] if row_highlighted else default_color) #highlight_color color_list[target]
             
     for node in data[mapped_columns[-1]].unique():
         sources.append(node_mapping[node])
@@ -216,16 +216,21 @@ def sub_table(df, highlighted_nodes, size_column,  page_flag):
     format_dict = generate_format(dist_result.columns)
     st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)  
 
-def sub_graph(df, highlighted_nodes, selected_columns, size_column, color_map):
-    highlighted_df = df[df.isin(highlighted_nodes).any(axis=1)]
+def sub_graph(df, highlighted_nodes, selected_columns, size_column, color_map, page_flag, filter_layer):
+    if filter_layer != 'AND':
+        highlighted_df = df[df[selected_columns].isin(highlighted_nodes).any(axis=1)]
+    else:
+        highlighted_df = df[df[selected_columns].isin(highlighted_nodes).all(axis=1)]
     sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, 
                             title= "Highlighted", size_column= size_column, color_map= color_map, autosize= True)
     st.plotly_chart(sub_fig) 
+    
+    sub_table(highlighted_df, highlighted_nodes, size_column, page_flag = page_flag)
 
-def graph(df, selected_columns, size_column, highlighted_nodes, color_map, title, page_flag):
+def graph(df, selected_columns, size_column, highlighted_nodes, color_map, title, page_flag, sub_graph_filter= 'AND'):
     if len(highlighted_nodes) != 0:
         sub_df = df.groupby(selected_columns).agg({size_column: 'sum'}).reset_index()
-        sub_graph(sub_df, highlighted_nodes, selected_columns, size_column, color_map)
+        sub_graph(sub_df, highlighted_nodes, selected_columns, size_column, color_map, page_flag, sub_graph_filter)
 
         fig = sankey_graph(sub_df, selected_columns, highlighted_nodes, title= title, 
                             size_column= size_column, color_map= color_map, autosize= False)
@@ -236,6 +241,5 @@ def graph(df, selected_columns, size_column, highlighted_nodes, color_map, title
         sub_df = df.groupby(selected_columns).agg({size_column: 'sum'}).reset_index()
         fig = sankey_graph(sub_df, selected_columns, highlighted_nodes, title= title, 
                             size_column= size_column, color_map= color_map, autosize= False)
-        
         st.plotly_chart(fig)
         

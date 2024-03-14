@@ -14,7 +14,7 @@ def load_data():
     # trans
     map_df = pd.read_csv('Map_V1.csv')
     map_tt = map_df.set_index('LEVEL_06_CODE')['LEVEL_05_NAME'].to_dict()
-    map_khoi = map_df.set_index('LEVEL_06_CODE')['LEVEL_KHOI_NAME'].to_dict()
+    map_khoi = map_df.set_index('LEVEL_06_CODE')['LEVEL_TEN_GOC_NAME'].to_dict()
 
     # load transaction data
     trans_df = pd.read_csv(r'sample data lv pk.csv')[['Lv0', 'Lv1', 'Lv2', 'Lv3', 'Lv4', 'Size']]
@@ -60,7 +60,7 @@ def load_data():
 @st.cache_data
 def load_color_map():
     map_df = pd.read_csv('Map_V1.csv')
-    map_khoi_color = map_df.set_index('LEVEL_KHOI_NAME')['LEVEL_KHOI_COLOR'].to_dict()
+    map_khoi_color = map_df.set_index('LEVEL_TEN_GOC_NAME')['LEVEL_TEN_GOC_COLOR'].to_dict()
 
     map_cost_type_color = pd.read_csv('Map_Cost_Type_V2.csv')
     map_cost_type_color = map_cost_type_color.set_index(['Tên Cost_type'])['Cost_type_COLOR'].to_dict()
@@ -71,11 +71,15 @@ def load_color_map():
     sp_df = pd.read_csv('Map_SP_V2.csv')
     map_sp_color = sp_df.set_index(['LEVEL2_DESC'])['LEVEL2_COLOR'].to_dict()
 
+    phong_df = pd.read_csv('Map_Phong_V1.csv')
+    map_phong_color = phong_df.set_index(['Ten phong'])['Phong_TYPE_COLOR'].to_dict()
+
     map_color_app = {}
     map_color_app.update(map_khoi_color)
     map_color_app.update(map_cost_type_color)
     map_color_app.update(map_pkkh)
     map_color_app.update(map_sp_color)
+    map_color_app.update(map_phong_color)
     return map_color_app
 
 
@@ -85,7 +89,8 @@ def main():
 
     if 'disabled' not in st.session_state:
         st.session_state.page_id = '1'
-        st.session_state.disabled = True
+        st.session_state.disabled = False
+        
 
     stx.tab_bar(data=[
         stx.TabBarItemData(id=1, title="Phân bổ Giai đoạn 1:", description="Từ trung tâm đến trung tâm"),
@@ -93,14 +98,13 @@ def main():
         stx.TabBarItemData(id=3, title="Phân bổ giai đoạn 3:", description="Từ CPQLKD trực tiếp đến Sản phẩm"),
         stx.TabBarItemData(id=4, title="Phân bổ giai đoạn 4:", description="Từ Đơn vị nhận phân bổ đến Sản phẩm, Phân khúc Khách hàng"),
     ], default=1, key= 'page_id')
-
-    sub_1_column, sub_2_column = st.columns([1, 6])
+    
+    sub_1_column, sub_2_column, sub_3_column = st.columns([1, 1, 6])
     
     sub_1_column.checkbox("Chọn ẩn chi tiết", key="disabled") 
-    # sub_2_column.radio("Chọn đơn vị chi tiết", options= ["Khối", "Trung tâm"],
-    #                     disabled=st.session_state.disabled) 
+    filer_option = sub_2_column.radio("Filter option", options= ["OR", "AND"]) 
     
-    datetime_slider = sub_2_column.slider(
+    datetime_slider = sub_3_column.slider(
         "Select a date range",
         min_value=start_date,
         max_value=end_date,
@@ -113,10 +117,9 @@ def main():
     pk_df = pk_df[pk_df['Tháng'].isin(st.session_state['date_range'])]
 
     map_color_app = load_color_map()
-    
+
     if st.session_state.page_id == '1':
-        option = st.selectbox('Option', ('Level 1 to 5', 'Level 1 and 5'))
-        if option == 'Level 1 and 5':
+        if st.session_state.disabled:
             selected_columns = ['Lv0_mapped', 'Lv4_mapped']
             layer0_column, layer1_column = st.columns(2)
             highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node for node in lv_04_khoi_df[selected_columns[0]].unique()])
@@ -126,7 +129,8 @@ def main():
             graph(lv_04_khoi_df, selected_columns, 'Size',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 1: Từ khối đến khối</b>",
-                  page_flag=1)
+                  page_flag=1, sub_graph_filter=filer_option)
+            
         else:
             selected_columns = ['Lv0_mapped', 'Lv1_mapped', 'Lv2_mapped', 'Lv3_mapped', 'Lv4_mapped']
             layer0_column, layer1_column, layer2_column, layer3_column, layer4_column = st.columns(5)
@@ -140,7 +144,7 @@ def main():
             graph(all_lv_khoi_df, selected_columns, 'Size',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 1: Từ khối đến khối</b>",
-                  page_flag=1)
+                  page_flag=1, sub_graph_filter=filer_option)
         
     elif st.session_state.page_id == '2':
         if st.session_state.disabled:
@@ -154,7 +158,7 @@ def main():
             graph(pk_df, selected_columns, 'Chi phí nhận phân bổ tại thời điểm',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 3: Từ Cost Type đến Sản phẩm</b>",
-                  page_flag=2)
+                  page_flag=2, sub_graph_filter=filer_option)
         else:
             selected_columns = ['COST_TYPE_NAME', 'Mã đơn vị tổ chức cấp 6_phong', 'Tên phân khúc KH cấp 3']
 
@@ -164,10 +168,12 @@ def main():
             highlighted_node_l3 = layer2_column.multiselect('Filter Phân khúc Khách hàng', [node for node in pk_df[selected_columns[2]].unique()])
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l2 + highlighted_node_l3
 
+            print([node for node in pk_df[selected_columns[1]].unique()])
+            
             graph(pk_df, selected_columns, 'Chi phí nhận phân bổ tại thời điểm',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 3: Từ Cost Type đến Sản phẩm</b>",
-                  page_flag=2)
+                  page_flag=2, sub_graph_filter=filer_option)
                 
     elif st.session_state.page_id == '3':
         if st.session_state.disabled:
@@ -180,7 +186,7 @@ def main():
             graph(pk_df, selected_columns, 'Chi phí nhận phân bổ tại thời điểm',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 3: Từ Cost Type đến Sản phẩm</b>",
-                  page_flag=3)
+                  page_flag=3, sub_graph_filter=filer_option)
         else:
             selected_columns = ['COST_TYPE_NAME', 'Mã đơn vị tổ chức cấp 6_phong', 'Mã SP cấp 5 PK']
             layer0_column, layer1_column, layer2_column = st.columns(3)
@@ -192,7 +198,7 @@ def main():
             graph(pk_df, selected_columns, 'Chi phí nhận phân bổ tại thời điểm',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 3: Từ Cost Type đến Sản phẩm</b>",
-                  page_flag=3)
+                  page_flag=3, sub_graph_filter=filer_option)
                 
     else:
         if st.session_state.disabled:
@@ -206,7 +212,7 @@ def main():
             graph(pk_df, selected_columns, 'Chi phí nhận phân bổ tại thời điểm',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 4: Từ Cost Type đến Sản phẩm, Phân khúc Khách hàng</b>",
-                  page_flag=4)
+                  page_flag=4, sub_graph_filter=filer_option)
         else:
             selected_columns = ['COST_TYPE_NAME', 'Mã đơn vị tổ chức cấp 6_phong', 'Mã SP cấp 5 PK', 'Tên phân khúc KH cấp 3']
             layer0_column, layer1_column, layer2_column, layer3_column = st.columns(4)
@@ -219,7 +225,7 @@ def main():
             graph(pk_df, selected_columns, 'Chi phí nhận phân bổ tại thời điểm',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 4: Từ Cost Type đến Sản phẩm, Phân khúc Khách hàng</b>",
-                  page_flag=4)
+                  page_flag=4, sub_graph_filter=filer_option)
 
 if __name__ == '__main__':
     # Set the date range
