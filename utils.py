@@ -169,13 +169,16 @@ def calculate_distribution(data, highlighted_nodes, size_column= 'Size', page_fl
 
     def calculate_percentage(df, level_column, size_column, page_flag= 1):
         grouped_df = df[[level_column, size_column]].groupby(level_column)[size_column].sum().reset_index()
-        total_size = grouped_df[size_column].sum()
-        grouped_df[f'Percentage_{level_column}'] = grouped_df[size_column] / total_size * 100
-        grouped_df = grouped_df.sort_values(by= f'Percentage_{level_column}', ascending=False, ignore_index= True)
+        # total_size = grouped_df[size_column].sum()
+        # grouped_df[f'Percentage_{level_column}'] = grouped_df[size_column] / total_size * 100
+        # grouped_df = grouped_df.sort_values(by= f'Percentage_{level_column}', ascending=False, ignore_index= True)
+        grouped_df[f'Total_{level_column}'] = grouped_df[size_column] 
+        grouped_df = grouped_df.sort_values(by= f'Total_{level_column}', ascending=False, ignore_index= True)
         if page_flag == 1:
             return grouped_df.drop(size_column, axis=1).set_index(grouped_df.columns[0])
         else:
             return grouped_df.drop(size_column, axis=1)
+        
     
     values_to_filter = highlighted_nodes
     filtered_df = data[data.isin(values_to_filter).any(axis=1)]

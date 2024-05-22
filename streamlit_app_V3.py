@@ -142,11 +142,11 @@ def main():
         else:
             selected_columns = ['Lv0_mapped', 'Lv1_mapped', 'Lv2_mapped', 'Lv3_mapped', 'Lv4_mapped']
             layer0_column, layer1_column, layer2_column, layer3_column, layer4_column = st.columns(5)
-            highlighted_node_l1 = layer0_column.multiselect('Lv1: Chi phí QLKDTT', [node for node in all_lv_khoi_df[selected_columns[0]].unique()])
-            highlighted_node_l2 = layer1_column.multiselect('Lv2: Chi phí QLKDTT sau khi BCN phân bổ', [node for node in all_lv_khoi_df[selected_columns[1]].unique()])
-            highlighted_node_l3 = layer2_column.multiselect('Lv3: Chi phí QLKDTT sau khi CNTT phân bổ', [node for node in all_lv_khoi_df[selected_columns[2]].unique()])
-            highlighted_node_l4 = layer3_column.multiselect('Lv4: Chi phí QLKDTT sau khi VP phân bổ', [node for node in all_lv_khoi_df[selected_columns[3]].unique()])
-            highlighted_node_l5 = layer4_column.multiselect('Lv5: Chi phí QLKDTT thực tế cuối cùng', [node for node in all_lv_khoi_df[selected_columns[4]].unique()])
+            highlighted_node_l1 = layer0_column.multiselect('Lv0: Chi phí QLKDTT', [node for node in all_lv_khoi_df[selected_columns[0]].unique()])
+            highlighted_node_l2 = layer1_column.multiselect('Lv1: Chi phí QLKDTT sau khi BCN phân bổ', [node for node in all_lv_khoi_df[selected_columns[1]].unique()])
+            highlighted_node_l3 = layer2_column.multiselect('Lv2: Chi phí QLKDTT sau khi CNTT phân bổ', [node for node in all_lv_khoi_df[selected_columns[2]].unique()])
+            highlighted_node_l4 = layer3_column.multiselect('Lv3: Chi phí QLKDTT sau khi VP phân bổ', [node for node in all_lv_khoi_df[selected_columns[3]].unique()])
+            highlighted_node_l5 = layer4_column.multiselect('Lv4: Chi phí QLKDTT thực tế cuối cùng', [node for node in all_lv_khoi_df[selected_columns[4]].unique()])
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l2 + highlighted_node_l3 + highlighted_node_l4 + highlighted_node_l5
             
             graph(all_lv_khoi_df, selected_columns, 'Size',
