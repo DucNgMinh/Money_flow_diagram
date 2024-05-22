@@ -217,17 +217,20 @@ def sub_table(df, highlighted_nodes, size_column,  page_flag):
     st.dataframe(dist_result, hide_index= True, use_container_width= True, column_config= format_dict)  
 
 def sub_graph(df, highlighted_nodes, selected_columns, size_column, color_map, page_flag, filter_layer):
-    if filter_layer != 'AND':
-        highlighted_df = df[df[selected_columns].isin(highlighted_nodes).any(axis=1)]
-    else:
+    if filter_layer == 'AND':
+        mask = df.apply(lambda row: all(any(node in str(cell) for cell in row.values) for node in highlighted_nodes), axis=1)
+        highlighted_df = df[mask]
+
+    if filter_layer == 'OR':
         highlighted_df = df[df[selected_columns].isin(highlighted_nodes).all(axis=1)]
+
     sub_fig = sankey_graph(highlighted_df, selected_columns, highlighted_nodes, 
                             title= "Highlighted", size_column= size_column, color_map= color_map, autosize= True)
     st.plotly_chart(sub_fig) 
     
     sub_table(highlighted_df, highlighted_nodes, size_column, page_flag = page_flag)
 
-def graph(df, selected_columns, size_column, highlighted_nodes, color_map, title, page_flag, sub_graph_filter= 'AND'):
+def graph(df, selected_columns, size_column, highlighted_nodes, color_map, title, page_flag, sub_graph_filter):
     if len(highlighted_nodes) != 0:
         sub_df = df.groupby(selected_columns).agg({size_column: 'sum'}).reset_index()
         sub_graph(sub_df, highlighted_nodes, selected_columns, size_column, color_map, page_flag, sub_graph_filter)

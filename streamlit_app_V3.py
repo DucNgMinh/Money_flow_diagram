@@ -99,18 +99,26 @@ def main():
         stx.TabBarItemData(id=4, title="Phân bổ giai đoạn 4:", description="Từ Đơn vị nhận phân bổ đến Sản phẩm, Phân khúc Khách hàng"),
     ], default=1, key= 'page_id')
     
-    sub_1_column, sub_2_column, sub_3_column = st.columns([1, 1, 6])
+    sub_1_column, sub_2_column, sub_3_column = st.columns([1, 1, 1])
     
     sub_1_column.checkbox("Chọn ẩn chi tiết", key="disabled") 
-    filer_option = sub_2_column.radio("Filter option", options= ["OR", "AND"]) 
     
-    datetime_slider = sub_3_column.slider(
+    filer_option = "AND"
+    
+    datetime_slider_start = sub_2_column.date_input(
+    "Select a date range",
+    min_value=start_date,
+    max_value=end_date,
+    value=start_date,
+    format="YYYY/MM/DD")
+    
+    datetime_slider_end = sub_3_column.date_input(
         "Select a date range",
         min_value=start_date,
         max_value=end_date,
-        value=(start_date, end_date),
-        format="YYYY/MM")
-    st.session_state['date_range'] = generate_year_month_range(datetime_slider[0], datetime_slider[-1])
+        value=end_date,
+        format="YYYY/MM/DD")
+    st.session_state['date_range'] = generate_year_month_range(datetime_slider_start, datetime_slider_end)
 
     all_lv_khoi_df, lv_04_khoi_df, pk_df = load_data()
 
@@ -134,18 +142,18 @@ def main():
         else:
             selected_columns = ['Lv0_mapped', 'Lv1_mapped', 'Lv2_mapped', 'Lv3_mapped', 'Lv4_mapped']
             layer0_column, layer1_column, layer2_column, layer3_column, layer4_column = st.columns(5)
-            highlighted_node_l1 = layer0_column.multiselect('Filter layer 1', [node for node in all_lv_khoi_df[selected_columns[0]].unique()])
-            highlighted_node_l2 = layer1_column.multiselect('Filter layer 2', [node for node in all_lv_khoi_df[selected_columns[1]].unique()])
-            highlighted_node_l3 = layer2_column.multiselect('Filter layer 3', [node for node in all_lv_khoi_df[selected_columns[2]].unique()])
-            highlighted_node_l4 = layer3_column.multiselect('Filter layer 4', [node for node in all_lv_khoi_df[selected_columns[3]].unique()])
-            highlighted_node_l5 = layer4_column.multiselect('Filter layer 5', [node for node in all_lv_khoi_df[selected_columns[4]].unique()])
+            highlighted_node_l1 = layer0_column.multiselect('Lv1: Chi phí QLKDTT', [node for node in all_lv_khoi_df[selected_columns[0]].unique()])
+            highlighted_node_l2 = layer1_column.multiselect('Lv2: Chi phí QLKDTT sau khi BCN phân bổ', [node for node in all_lv_khoi_df[selected_columns[1]].unique()])
+            highlighted_node_l3 = layer2_column.multiselect('Lv3: Chi phí QLKDTT sau khi CNTT phân bổ', [node for node in all_lv_khoi_df[selected_columns[2]].unique()])
+            highlighted_node_l4 = layer3_column.multiselect('Lv4: Chi phí QLKDTT sau khi VP phân bổ', [node for node in all_lv_khoi_df[selected_columns[3]].unique()])
+            highlighted_node_l5 = layer4_column.multiselect('Lv5: Chi phí QLKDTT thực tế cuối cùng', [node for node in all_lv_khoi_df[selected_columns[4]].unique()])
             highlighted_nodes = highlighted_node_l1 + highlighted_node_l2 + highlighted_node_l3 + highlighted_node_l4 + highlighted_node_l5
             
             graph(all_lv_khoi_df, selected_columns, 'Size',
                   highlighted_nodes, map_color_app, 
                   title="<b>Phân bổ giai đoạn 1: Từ khối đến khối</b>",
                   page_flag=1, sub_graph_filter=filer_option)
-        
+
     elif st.session_state.page_id == '2':
         if st.session_state.disabled:
             selected_columns = ['COST_TYPE_NAME', 'Tên phân khúc KH cấp 3']
